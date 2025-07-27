@@ -1,24 +1,24 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.ts'
+import './styles/main.css';
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+// // Переключаем loading/loaded вручную до загрузки qr.js
+// const loadingElement = document.getElementById('loading');
+// const loadedElement = document.getElementById('loaded');
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+// if (loadingElement) {
+//     loadingElement.hidden = true;
+// }
+// if (loadedElement) {
+//     loadedElement.hidden = false;
+// }
+
+// Загружаем qr.js
+import('./qr.js')
+  .then(() => {
+    console.log('qr.js loaded and initialized successfully');
+  })
+  .catch((error) => {
+    console.error('Failed to load qr.js:', error);
+    // if (loadingElement) {
+    //   loadingElement.innerHTML = '<p style="color: red;">Ошибка загрузки приложения QR-кода</p>';
+    // }
+  });
