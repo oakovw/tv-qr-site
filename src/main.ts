@@ -12,7 +12,7 @@ import './styles/main.css';
 // }
 
 // Загружаем qr.js
-import('./qr.js')
+import('./qr.ts')
   .then(() => {
     console.log('qr.js loaded and initialized successfully');
   })
