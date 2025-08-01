@@ -28,7 +28,7 @@ jobs:
           path: dist
           clear: true
 
-    deploy-function:
+  deploy-function:
     runs-on: ubuntu-latest
     needs: deploy-site
     steps:
