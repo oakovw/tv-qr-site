@@ -20,8 +20,8 @@
     // "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "allowJs": true,          // позволяет использовать JS-файлы
-    "noImplicitAny": false    // или выключить именно эту проверку
+    // "allowJs": true,          // позволяет использовать JS-файлы
+    // "noImplicitAny": false    // или выключить именно эту проверку
   },
   "include": ["src"]
 }

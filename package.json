@@ -6,14 +6,18 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:cf": "esbuild src/cf.ts --bundle --platform=node --target=node18 --outfile=dist/cf/index.js"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.152",
+    "@types/node": "^24.1.0",
+    "esbuild": "^0.25.8",
     "prettier": "^3.6.2",
     "typescript": "~5.8.3",
     "vite": "^7.0.4"
   },
   "dependencies": {
-    "qrcode-generator": "^2.0.2"
+    "@aws-sdk/client-s3": "^3.858.0"
   }
 }

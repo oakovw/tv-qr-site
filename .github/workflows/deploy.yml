@@ -1,32 +1,56 @@
-name: Deploy to Yandex Object Storage
+name: Deploy site + Cloud Function
 
 on:
   push:
     branches: [ main ]
 
+env:
+  YC_FOLDER: b1gxxxxxxxxxxx        # Folder ID
+  CF_NAME: tv-qr-site              # Function name
+  SA_ID: aje5xxxxxxxxxxx           # Service-account ID
+  BUCKET: ${{ secrets.BUCKET }}    # Already set
+  REGION: ru-central1
+
 jobs:
-  deploy:
+  deploy-site:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 18 }
+      - run: npm ci
+      - run: npm run build         # Vite → dist/
+      - uses: povetek/yandex-object-storage-action@v3
         with:
-          node-version: 18
-
-      - name: Install deps & build
-        run: |
-          npm ci
-          npm run build           # должен положить результат в dist/
-
-      - name: Deploy to Yandex Object Storage
-        uses: povetek/yandex-object-storage-action@v3
-        with:
-          access-key-id:     ${{ secrets.ACCESS_KEY_ID }}
+          access-key-id: ${{ secrets.ACCESS_KEY_ID }}
           secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
-          bucket:            ${{ secrets.BUCKET }}
-          path:              dist
-          clear:             true          # очистить бакет перед заливкой
+          bucket: ${{ env.BUCKET }}
+          path: dist
+          clear: true
+
+  deploy-function:
+    runs-on: ubuntu-latest
+    needs: deploy-site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 18 }
+      - run: npm ci && npm run build:cf
+      - uses: yc-actions/yc-sls-function@v2
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON }}
+          folder-id: ${{ env.YC_FOLDER }}
+          function-name: ${{ env.CF_NAME }}
+          runtime: nodejs18
+          entrypoint: index.handler
+          memory: 128
+          timeout: 10
+          source: dist/cf
+          environment: |
+            BUCKET_NAME=${{ env.BUCKET }}
+            SITE_URL=https://${{ env.CF_NAME }}.apigw.yandexcloud.net
+            CALLBACK_URL=https://${{ env.CF_NAME }}.apigw.yandexcloud.net/oauth/callback
+            YANDEX_CLIENT_ID=${{ secrets.YANDEX_CLIENT_ID }}
+            YANDEX_CLIENT_SECRET=${{ secrets.YANDEX_CLIENT_SECRET }}
+            AWS_ACCESS_KEY_ID=${{ secrets.ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.SECRET_ACCESS_KEY }}
