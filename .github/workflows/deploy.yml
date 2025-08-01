@@ -43,7 +43,7 @@ jobs:
           function-name: ${{ env.CF_NAME }}
           runtime: nodejs18
           entrypoint: index.handler
-          memory: 128
+          memory: '128Mb'
           environment: |
             BUCKET_NAME=${{ secrets.BUCKET }}
             SITE_URL=https://${{ env.CF_NAME }}.apigw.yandexcloud.net
