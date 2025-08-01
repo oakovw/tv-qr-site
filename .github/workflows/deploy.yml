@@ -46,8 +46,8 @@ jobs:
           memory: '128Mb'
           environment: |
             BUCKET_NAME=${{ secrets.BUCKET }}
-            SITE_URL=https://d5dq7p5jrctvflqub0dj.apigw.yandexcloud.net
-            CALLBACK_URL=https://d5dq7p5jrctvflqub0dj.apigw.yandexcloud.net/oauth/callback
+            SITE_URL=https://d5dq7p5jrctvflqub0dj.fary004x.apigw.yandexcloud.net
+            CALLBACK_URL=https://d5dq7p5jrctvflqub0dj.fary004x.apigw.yandexcloud.net/oauth/callback
             YANDEX_CLIENT_ID=${{ secrets.YANDEX_CLIENT_ID }}
             YANDEX_CLIENT_SECRET=${{ secrets.YANDEX_CLIENT_SECRET }}
             AWS_ACCESS_KEY_ID=${{ secrets.ACCESS_KEY_ID }}
