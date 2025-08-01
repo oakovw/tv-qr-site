@@ -47,7 +47,7 @@ jobs:
           timeout: 10
           source: dist/cf
           environment: |
-            BUCKET_NAME=${{ env.BUCKET }}
+            BUCKET_NAME=${{ secrets.BUCKET }}
             SITE_URL=https://${{ env.CF_NAME }}.apigw.yandexcloud.net
             CALLBACK_URL=https://${{ env.CF_NAME }}.apigw.yandexcloud.net/oauth/callback
             YANDEX_CLIENT_ID=${{ secrets.YANDEX_CLIENT_ID }}
