@@ -4,9 +4,9 @@ on:
   push:
     branches: [ main ]
 
-# env:
-#   YC_FOLDER: b1gxxxxxxxxxxx        # Folder ID
-#   CF_NAME: tv-qr-site              # Function name
+env:
+  YC_FOLDER: b1g2ij01rbqvskp9rgqe        # Folder ID
+  CF_NAME: tv-qr-site              # Function name
 #   SA_ID: aje5xxxxxxxxxxx           # Service-account ID
 #   BUCKET: ${{ secrets.BUCKET }}    # Already set
 #   REGION: ru-central1
@@ -24,7 +24,7 @@ jobs:
         with:
           access-key-id: ${{ secrets.ACCESS_KEY_ID }}
           secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
-          bucket: ${{ env.BUCKET }}
+          bucket: ${{ secrets.BUCKET }}
           path: dist
           clear: true
 
