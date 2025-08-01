@@ -17,9 +17,11 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
+    // "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "allowJs": true,          // позволяет использовать JS-файлы
+    "noImplicitAny": false    // или выключить именно эту проверку
   },
   "include": ["src"]
 }

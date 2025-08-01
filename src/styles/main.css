@@ -1,0 +1,55 @@
+html {
+    font-family: sans-serif;
+}
+
+h1 {
+    text-align: center;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+    vertical-align: top;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+}
+
+td:first-child {
+    white-space: pre;
+    padding-right: 0.5em;
+}
+
+textarea,
+input[type="text"],
+input[type="number"] {
+    font-size: inherit;
+    font-family: inherit;
+    width: 100%;
+    min-height: 1.5em;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+input[type=radio],
+input[type=checkbox] {
+    margin: 0em 0.2em 0em 0em;
+    padding: 0em;
+}
+
+label+label {
+    margin-left: 0.8em;
+}
+
+hr {
+    margin: 2em 0em;
+    border: none;
+    border-top: 0.1em solid #A0A0A0;
+}
+
+.wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
