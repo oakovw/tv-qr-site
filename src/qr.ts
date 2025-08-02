@@ -32,7 +32,7 @@ let token: string | null = null;
 document.getElementById('logout')?.addEventListener('click', (e) => {
   e.preventDefault();                // не отправлять форму
   sessionStorage.removeItem('oauth_token');
-  location.href = '/';
+  window.location.href = '/';
 });
 
   // 5. Подписать поля ввода
