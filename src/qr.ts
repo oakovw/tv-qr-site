@@ -30,6 +30,7 @@ let token: string | null = null;
 
   // 4. Logout
   document.getElementById('logout')?.addEventListener('click', () => {
+    e.preventDefault(); 
     sessionStorage.removeItem('oauth_token');
     location.href = '/';
   });
