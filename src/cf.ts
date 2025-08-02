@@ -86,6 +86,8 @@ async function handleOAuthCallback(event: any) {
 }
 
 async function handleSiteRequest(event: any) {
+  console.log("DEBUG: Raw event.path:", JSON.stringify(event.path));
+  console.log("DEBUG: Raw event:", JSON.stringify(event));
   // 1. Определяем запрашиваемый файл (исправляем логику)
   let key: string;
   if (event.path === '/' || event.path === '') {
@@ -94,11 +96,11 @@ async function handleSiteRequest(event: any) {
     // Убираем начальный слэш
     key = event.path.startsWith('/') ? event.path.substring(1) : event.path;
   }
-
+   console.log("Determined S3 key:", key);
   // 2. Новая логика: ВСЕ файлы публичны, кроме index.html
   // ИЛИ, чтобы быть совсем точным: только index.html требует авторизации
   const isPublic = (key !== 'index.html');
-
+   console.log("Is file public?", isPublic);
   if (isPublic) {
     // 3. Отдача публичного файла БЕЗ проверки авторизации
     const mime = getMimeType(key);
