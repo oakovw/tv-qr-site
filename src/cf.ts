@@ -75,37 +75,37 @@ async function handleOAuthCallback(event: any) {
 }
 
 async function handleSiteRequest(event: any) {
-  let key;
-        if (event.path === '/') {
-            key = 'index.html';
-        } else {
-            // Проверяем оба возможных поля для path parameters
-            key = event.pathParameters?.file || event.pathParams?.file || 'index.html';
-        }
+  let key: string;
+if (event.path === '/' || event.path === '') {
+    key = 'index.html';
+} else {
+    // Убираем начальный слэш
+    key = event.path.startsWith('/') ? event.path.substring(1) : event.path;
+}
 
-  // Public file
-  const isPublic = key.startsWith('assets/'); // || key === 'index.html';
-  // if (key === 'qr.js') {
-  if (isPublic) {
-    const mime = getMimeType(key);
-    try {
-      const response = await s3.getObject({ Bucket: process.env.BUCKET_NAME!, Key: key });
-      const chunks: Buffer[] = [];
-      for await (const chunk of response.Body!) chunks.push(chunk);
-      const bodyBuffer = Buffer.concat(chunks);
+  // // Public file
+  // const isPublic = key.startsWith('assets/'); // || key === 'index.html';
+  // // if (key === 'qr.js') {
+  // if (isPublic) {
+  //   const mime = getMimeType(key);
+  //   try {
+  //     const response = await s3.getObject({ Bucket: process.env.BUCKET_NAME!, Key: key });
+  //     const chunks: Buffer[] = [];
+  //     for await (const chunk of response.Body!) chunks.push(chunk);
+  //     const bodyBuffer = Buffer.concat(chunks);
 
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': mime, 'Cache-Control': 'public, max-age=3600' },
-        body: bodyBuffer.toString(mime.startsWith('text') ? 'utf8' : 'base64'),
-        isBase64Encoded: !mime.startsWith('text')
-      };
-    } catch (e: any) {
-      return e.name === 'NoSuchKey'
-        ? { statusCode: 404, body: JSON.stringify({ message: 'Public file not found' }) }
-        : { statusCode: 500, body: JSON.stringify({ message: 'S3 error' }) };
-    }
-  }
+  //     return {
+  //       statusCode: 200,
+  //       headers: { 'Content-Type': mime, 'Cache-Control': 'public, max-age=3600' },
+  //       body: bodyBuffer.toString(mime.startsWith('text') ? 'utf8' : 'base64'),
+  //       isBase64Encoded: !mime.startsWith('text')
+  //     };
+  //   } catch (e: any) {
+  //     return e.name === 'NoSuchKey'
+  //       ? { statusCode: 404, body: JSON.stringify({ message: 'Public file not found' }) }
+  //       : { statusCode: 500, body: JSON.stringify({ message: 'S3 error' }) };
+  //   }
+  // }
 
   // Auth check
   const authHeader = event.headers?.Authorization;
