@@ -86,17 +86,30 @@ async function handleOAuthCallback(event: any) {
 }
 
 async function handleSiteRequest(event: any) {
-  console.log("DEBUG: Raw event.path:", JSON.stringify(event.path));
-  console.log("DEBUG: Raw event:", JSON.stringify(event));
-  // 1. Определяем запрашиваемый файл (исправляем логику)
+    console.log("DEBUG: Raw event.path:", JSON.stringify(event.path));
+  console.log("DEBUG: Raw event.pathParams:", JSON.stringify(event.pathParams));
+  console.log("DEBUG: Raw event.params:", JSON.stringify(event.params));
+
+  // 1. Определяем запрашиваемый файл
   let key: string;
+  
+  // Проверяем, является ли путь корневым
   if (event.path === '/' || event.path === '') {
     key = 'index.html';
-  } else {
+  } 
+  // Проверяем, есть ли path parameter (для запросов вроде /assets/...)
+  else if (event.pathParams?.file) {
+    key = event.pathParams.file;
+  } else if (event.params?.file) {
+    key = event.params.file;
+  }
+  // Если ничего не подошло, пытаемся использовать оригинальный путь (на всякий случай)
+  else {
     // Убираем начальный слэш
     key = event.path.startsWith('/') ? event.path.substring(1) : event.path;
   }
-   console.log("Determined S3 key:", key);
+
+  console.log("DEBUG: Determined key:", key);
   // 2. Новая логика: ВСЕ файлы публичны, кроме index.html
   // ИЛИ, чтобы быть совсем точным: только index.html требует авторизации
   const isPublic = (key !== 'index.html');
