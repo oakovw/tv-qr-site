@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 18 }
       - run: npm ci
-      - run: npm run build         # Vite → dist/
+      - run: npm run build:prod         # Vite → dist/
       - uses: povetek/yandex-object-storage-action@v3
         with:
           access-key-id: ${{ secrets.ACCESS_KEY_ID }}
