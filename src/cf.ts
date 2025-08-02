@@ -75,8 +75,13 @@ async function handleOAuthCallback(event: any) {
 }
 
 async function handleSiteRequest(event: any) {
-  let key = event.pathParameters?.file || 'index.html';
-  if (key === '/' || key.endsWith('/')) key += 'index.html';
+  let key;
+        if (event.path === '/') {
+            key = 'index.html';
+        } else {
+            // Проверяем оба возможных поля для path parameters
+            key = event.pathParameters?.file || event.pathParams?.file || 'index.html';
+        }
 
   // Public file
   const isPublic = key.startsWith('assets/') || key === 'index.html';
