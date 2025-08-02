@@ -107,27 +107,41 @@ if (event.path === '/' || event.path === '') {
   //   }
   // }
 
-  // Auth check
+  // 3. Проверка авторизации (эта часть остается как есть)
   const authHeader = event.headers?.Authorization;
   let oauthToken: string | null = null;
-  if (authHeader && authHeader.startsWith('Bearer ')) oauthToken = authHeader.substring(7);
-  else if (event.queryStringParameters?.token) oauthToken = event.queryStringParameters.token;
-
-  if (!oauthToken) return authRedirect();
-
-  const userInfo = await getUserInfo(oauthToken);
-  if (!isUserAllowed(userInfo.default_email)) {
-    return { statusCode: 403, body: JSON.stringify({ message: 'Access denied' }) };
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    oauthToken = authHeader.substring(7);
+  } else if (event.queryStringParameters?.token) {
+    oauthToken = event.queryStringParameters.token;
   }
 
-  // Serve file
+  if (!oauthToken) {
+    return authRedirect();
+  }
+
+  let userInfo;
+  try {
+    userInfo = await getUserInfo(oauthToken);
+  } catch (error) {
+    console.error("Ошибка получения информации о пользователе:", error);
+    return authRedirect(); // Или ошибка 401
+  }
+
+  if (!isUserAllowed(userInfo.default_email)) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ message: 'Access denied' }),
+    };
+  }
+
+  // 4. Отдача файла (эта часть остается как есть, но теперь выполняется всегда после проверки)
   const mime = getMimeType(key);
   try {
     const response = await s3.getObject({ Bucket: process.env.BUCKET_NAME!, Key: key });
     const chunks: Buffer[] = [];
     for await (const chunk of response.Body!) chunks.push(chunk);
     const bodyBuffer = Buffer.concat(chunks);
-
     return {
       statusCode: 200,
       headers: { 'Content-Type': mime, 'Cache-Control': 'public, max-age=3600' },
@@ -135,6 +149,7 @@ if (event.path === '/' || event.path === '') {
       isBase64Encoded: !mime.startsWith('text')
     };
   } catch (e: any) {
+    console.error("Ошибка получения файла из S3:", e);
     return e.name === 'NoSuchKey'
       ? { statusCode: 404, body: JSON.stringify({ message: 'File not found' }) }
       : { statusCode: 500, body: JSON.stringify({ message: 'Internal server error', error: e.message }) };
