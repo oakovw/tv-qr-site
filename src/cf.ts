@@ -49,16 +49,27 @@ async function handleOAuthCallback(event: any) {
   if (!code) {
     return { statusCode: 400, body: JSON.stringify({ message: 'Authorization code required' }) };
   }
+  
+  // Добавляем redirect_uri
+  const redirectUri = process.env.CALLBACK_URL; 
+  if (!redirectUri) {
+     console.error("CALLBACK_URL environment variable is not set!");
+     return { statusCode: 500, body: JSON.stringify({ message: 'Server configuration error' }) };
+  }
+
+  // Формируем тело запроса с redirect_uri
+  const body = `grant_type=authorization_code&code=${code}&client_id=${process.env.YANDEX_CLIENT_ID}&client_secret=${process.env.YANDEX_CLIENT_SECRET}&redirect_uri=${encodeURIComponent(redirectUri)}`;
 
   const tokenResponse = await fetch('https://oauth.yandex.ru/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `grant_type=authorization_code&code=${code}&client_id=${process.env.YANDEX_CLIENT_ID}&client_secret=${process.env.YANDEX_CLIENT_SECRET}`
+    body: body // Используем body с redirect_uri
   });
+  
   const tokenData = await tokenResponse.json();
-
   if (!tokenData.access_token) {
-    return { statusCode: 401, body: JSON.stringify({ message: 'Failed to get access token' }) };
+    console.error("Yandex token endpoint error response:", JSON.stringify(tokenData)); // Логируем ответ для диагностики
+    return { statusCode: 401, body: JSON.stringify({ message: 'Failed to get access token from Yandex', details: tokenData /* Можно убрать позже */ }) };
   }
 
   const userInfo = await getUserInfo(tokenData.access_token);
