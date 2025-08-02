@@ -564,7 +564,7 @@ function makeText() {
             text = `ST00012|Name=ООО «ТЕРРИТОРИЯ ДЕТСТВА»|PersonalAcc=40702810538000453171|BankName=ПАО Сбербанк|BIC=044525225|CorrespAcc=30101810400000000225|PayeeINN=7725641886|KPP=772901001|ChildFio=${fio}|Purpose=${purp}|Sum=${sum * 100}`;
             break;
         case "org-sd":
-            text = `ST00012|Name=АНО "СЧАСТЛИВОЕ ДЕТСТВО"|PersonalAcc=40703810738000017277|BankName=ПАО Сбербанк|BIC=044525225|CorrespAcc=30101810400000000225|PayeeINN=9729300383|KPP=772901001|Purpose=${purp}|Sum=${sum * 100}`;
+            text = `ST00012|Name=АНО "СЧАСТЛИВОЕ ДЕТСТВО"|PersonalAcc=40703810738000017277|BankName=ПАО Сбербанк|BIC=044525225|CorrespAcc=30101810400000000225|PayeeINN=9729300383|KPP=772901001|ChildFio=${fio}|Purpose=${purp}|Sum=${sum * 100}`;
             break;
         default:
             text = "";
@@ -643,12 +643,5 @@ function drawCanvas(qr, scale, border, light, dark, canvas, org) {
         y += 14.4;
     }
 }
-// В конце qr.js замените:
-initialize();
 
-// // На:
-// if (document.readyState === 'loading') {
-//     document.addEventListener('DOMContentLoaded', initialize);
-// } else {
-//     initialize();
-// }
+initialize();
