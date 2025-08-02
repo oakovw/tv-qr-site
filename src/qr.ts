@@ -29,11 +29,11 @@ let token: string | null = null;
   });
 
   // 4. Logout
-  document.getElementById('logout')?.addEventListener('click', () => {
-    e.preventDefault(); 
-    sessionStorage.removeItem('oauth_token');
-    location.href = '/';
-  });
+document.getElementById('logout')?.addEventListener('click', (e) => {
+  e.preventDefault();                // не отправлять форму
+  sessionStorage.removeItem('oauth_token');
+  location.href = '/';
+});
 
   // 5. Подписать поля ввода
   const inputs = document.querySelectorAll<HTMLInputElement>(
