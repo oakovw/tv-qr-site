@@ -84,7 +84,7 @@ async function handleSiteRequest(event: any) {
         }
 
   // Public file
-  const isPublic = key.startsWith('assets/') || key === 'index.html';
+  const isPublic = key.startsWith('assets/'); // || key === 'index.html';
   // if (key === 'qr.js') {
   if (isPublic) {
     const mime = getMimeType(key);
