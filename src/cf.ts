@@ -187,10 +187,25 @@ async function handleSiteRequest(event: any) {
 
 function authRedirect() {
   const url = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${process.env.YANDEX_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.CALLBACK_URL!)}`;
+  // Создаем HTML с центрированной ссылкой
+  const htmlBody = `
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"> <!-- Указывает браузеру использовать UTF-8 -->
+    <title>Требуется вход</title>
+</head>
+<body>
+    <a href="${url}">Войдите с помощью Яндекса</a>
+</body>
+</html>
+`;
   return {
     statusCode: 401,
-    headers: { 'Content-Type': 'text/html' },
-    body: `<html><body><a href="${url}">Войдите с помощью Яндекса</a></body></html>`
+    headers: { 
+      'Content-Type': 'text/html; charset=utf-8' // Явно указываем charset=UTF-8 в HTTP-заголовке
+    },
+    body: htmlBody
   };
 }
 
