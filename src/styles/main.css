@@ -53,3 +53,13 @@ hr {
     margin: 0 auto;
     padding: 2rem 1rem;
 }
+
+canvas {
+    padding: 1em; 
+    background-color: #e8e8e8
+}
+
+#sum-input {
+    width:12em; 
+    text-align: right
+}
