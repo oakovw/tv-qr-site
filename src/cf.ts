@@ -191,7 +191,7 @@ function authRedirect() {
   return {
     statusCode: 401,
     headers: { 'Content-Type': 'text/html' },
-    body: `<html><body style="margin 0 auto"><a href="${url}">Login with Yandex</a></body></html>`
+    body: `<html><body><a href="${url}" style="margin 0 auto">Login with Yandex</a></body></html>`
   };
 }
 
