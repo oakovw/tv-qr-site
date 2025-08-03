@@ -1,4 +1,3 @@
-/* src/index.ts – verbatim JS → TS */
 const { S3 } = require('@aws-sdk/client-s3');
 
 const ALLOWED_USERS = [
@@ -191,7 +190,7 @@ function authRedirect() {
   return {
     statusCode: 401,
     headers: { 'Content-Type': 'text/html' },
-    body: `<html><body><a href="${url}" style="margin 0 auto">Login with Yandex</a></body></html>`
+    body: `<html><body><a href="${url}">Войдите с помощью Яндекса</a></body></html>`
   };
 }
 
