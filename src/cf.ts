@@ -196,7 +196,7 @@ function authRedirect() {
     <title>Требуется вход</title>
 </head>
 <body>
-    <div style="margin 10em auto"> 
+    <div style="width: fit-content; margin: 10em auto;"> 
       <a href="${url}">Войдите с помощью Яндекса</a>
     </div>  
 </body>
