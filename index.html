@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code для оплаты</title>
 </head>
 
@@ -20,49 +21,42 @@
             <p>(Are the JavaScript files missing?)</p>
             <p>(The JavaScript code needs to be compiled from the TypeScript code.)</p>
         </div>
-        <form id="loaded" style="display:none" onsubmit="event.preventDefault();">
-            <table>
-                <tbody>
-                    <tr>
-                        <td><strong>Организация:</strong></td>
-                        <td>
-                            <label><input type="radio" name="org" value="org-sd" checked="checked">Счастливое
-                                Детство</label>
-                            <label><input type="radio" name="org" value="org-td">Территория Детства</label>
-                        </td>
-                    </tr>
-                    <tr><td></td></tr>
-                    <tr>
-                        <td>ФИО Ребенка</td>
-                        <td><textarea placeholder="Введите Фамилию и Имя ребенка" id="fio-input"></textarea></td>
-                    </tr>
-                    <tr>
-                        <td>Сумма платежа</td>
-                        <td><input type="text" inputmode="decimal" id="sum-input" placeholder="0,00"> руб.</td>
-                    </tr>
-                    <tr>
-                        <td>Назначение платежа</td>
-                        <td><textarea placeholder="Введите назначение платежа" id="purp-input"></textarea></td>
-                    </tr>
-                    <tr style="display: none;">
-                        <td><strong>Text string:</strong></td>
-                        <td><textarea placeholder="Enter your text to be put into the QR Code" id="text-input"
-                                style="width:30em; height:5em"></textarea></td>
-                    </tr>
-                    <tr>
-                        <td><strong>QR Code:</strong><br /><a id="download">(Скачать)</a></td>
-                        <td>
-                            <img id="logo" src="/logo.svg" style="display: none;">
-                            <canvas id="qrcode-canvas"></canvas>
-                            <!-- <svg id="qrcode-svg" style="display:none; width:30em; height:30em; padding:1em; background-color:#E8E8E8">
-                                <rect width="100%" height="100%" fill="#FFFFFF" stroke-width="0"></rect>
-                                <path d="" fill="#000000" stroke-width="0"></path>
-                            </svg> -->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </form>
+<form id="loaded" style="display:none" class="payment-form" onsubmit="event.preventDefault();">
+<div class="form-group">
+                <label for="org">Организация:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="org" value="org-sd" checked>Счастливое Детство</label>
+                    <label><input type="radio" name="org" value="org-td">Территория Детства</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="fio-input">ФИО Ребенка:</label>
+                <textarea id="fio-input" placeholder="Введите Фамилию и Имя ребенка"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="sum-input">Сумма платежа:</label>
+                <div class="input-group">
+                    <input type="text" inputmode="decimal" id="sum-input" placeholder="0,00">
+                    <span>руб.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="purp-input">Назначение платежа:</label>
+                <textarea id="purp-input" placeholder="Введите назначение платежа"></textarea>
+            </div>
+            <div style="display: none">
+    <textarea placeholder="Enter your text to be put into the QR Code" id="text-input"
+                                style="width:30em; height:5em"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="qrcode-canvas">QR Code:</label>
+                <div class="qr-group">
+                    <img id="logo" src="/logo.svg" style="display: none;">
+                    <canvas id="qrcode-canvas" aria-label="QR-код для оплаты"></canvas>
+                    <a id="download" download="qr-code.jpeg">Скачать QR-код</a>
+                </div>
+            </div>
+</form>
     </div>
 
     <!-- <script type="module" src="./qrcodegen.ts"></script> -->
