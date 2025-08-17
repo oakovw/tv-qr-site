@@ -204,7 +204,7 @@ function redrawQrCode(text: string, org: string) {
     for (let y = -border; y < qr.size + border; y++) {
       for (let x = -border; x < qr.size + border; x++) {
         if (qr.getModule(x, y)) {
-          ctx.fillRect((x + border) * scale, width / 9 + 10 + (y + border) * scale, scale, scale);
+          ctx.fillRect((x + border) * scale, width / 9 + 10 + 100 + (y + border) * scale, scale, scale);
         }
       }
     }
@@ -237,14 +237,22 @@ function redrawQrCode(text: string, org: string) {
     let yPos = width + 10 + width / 9;
     lines.forEach(line => {
       ctx.fillText(line, 10, yPos);
-      yPos += 14.4;
+      yPos += 15; // 14.4;
     });
+
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText('QR-код для оплаты', width / 3 + 40, width / 18);
+
+    ctx.font = '14px Arial';
+    ctx.fillText('Ученик:', 10, width / 9 + 30);
+    ctx.fillText('Назначение платежа:', 10, width / 9 + 50);
+
     // ссылка «Скачать»
     const download = document.getElementById('download') as HTMLAnchorElement;
-    download.download = 'qr-code.png';
-    download.href = canvas.toDataURL('image/png');
+    download.download = 'qr-code.jpeg';
+    download.href = canvas.toDataURL('image/jpeg', 1.0);
   } catch (err) {
     console.error("QR Code generation error:", err);
-    alert("Ошибка генерации QR-кода. Проверьте введенные данные.");
+    // alert("Ошибка генерации QR-кода. Проверьте введенные данные.");
   }
 }
