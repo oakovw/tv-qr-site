@@ -67,7 +67,18 @@ h1 {
 .qr-group {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 2rem;
+}
+
+.labqr-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.labqr-group label {
+    width: 150px;
+    text-align: right;
+    padding-top: 0.5rem;
 }
 
 #qrcode-canvas {
@@ -80,7 +91,7 @@ h1 {
 #download {
     color: #007bff;
     text-decoration: none;
-    font-size: 0.9rem;
+    text-align: right;
 }
 
 #download:hover {

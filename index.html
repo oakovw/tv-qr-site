@@ -44,16 +44,14 @@
                 <label for="purp-input">Назначение платежа:</label>
                 <textarea id="purp-input" placeholder="Введите назначение платежа"></textarea>
             </div>
-            <div style="display: none">
-    <textarea placeholder="Enter your text to be put into the QR Code" id="text-input"
-                                style="width:30em; height:5em"></textarea>
-            </div>
             <div class="form-group">
-                <label for="qrcode-canvas">QR Code:</label>
+                <div class="labqr-group">
+                    <label for="qrcode-canvas">QR Code:</label>
+                    <a id="download" download="qr-code.jpeg">Скачать QR-код</a>
+                </div>
                 <div class="qr-group">
                     <img id="logo" src="/logo.svg" style="display: none;">
                     <canvas id="qrcode-canvas" aria-label="QR-код для оплаты"></canvas>
-                    <a id="download" download="qr-code.jpeg">Скачать QR-код</a>
                 </div>
             </div>
 </form>
