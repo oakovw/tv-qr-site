@@ -1,7 +1,10 @@
 import qrcodegen from "./qrcodegen";
+import * as fabric from "fabric";
 
 /* ---------- DOM glue ---------- */
 let token: string | null = null;
+let canvas: fabric.Canvas | null = null;
+let logoImage: fabric.FabricImage | fabric.Rect | null = null;
 
 // --- ИСПРАВЛЕННАЯ ЛОГИКА ФОРМАТИРОВАНИЯ ---
 // Функция для форматирования числа с запятой и двумя знаками после
@@ -113,8 +116,32 @@ function handleSumInput(e: Event) {
   }
   // 2. Дождаться загрузки DOM
   if (document.readyState === 'loading') {
-    await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
-  }
+    await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve)); 
+  } 
+  
+const canvasElement = document.getElementById('qrcode-canvas') as HTMLCanvasElement;
+canvas = new fabric.Canvas(canvasElement, { width: 400, height: 400 });
+
+// Инициализация логотипа
+const logoImg = document.getElementById('logo') as HTMLImageElement;
+if (logoImg) {
+  logoImage = new fabric.FabricImage(logoImg, {
+                left: 10,
+                top: 10,
+                selectable: false
+            });
+}
+
+const textareas = document.querySelectorAll('textarea');
+
+  textareas.forEach((textarea) => {
+    textarea.addEventListener('input', function (e) {
+      const target = e.target as HTMLTextAreaElement;
+      // Оставляем только русские буквы, пробелы, дефисы, апострофы
+      target.value = target.value.replace(/[^А-Яа-яЁё0-9\s\.\,\:\;\!\?\«\»\"\'\(\)\[\]\-\_\№]/g, '');
+    });
+  });
+
   // 3. Подписать внутренние ссылки токеном
   document.querySelectorAll<HTMLAnchorElement>('a[href^="/"]').forEach(a => {
     if (!a.href.includes('token=')) {
@@ -154,7 +181,7 @@ function handleSumInput(e: Event) {
 
 /* ---------- бизнес-логика ---------- */
 function makeText() {
-  const fio = (document.getElementById('fio-input') as HTMLInputElement)?.value ?? '';
+  const fio = (document.getElementById('fio-input') as HTMLInputElement).value;
   // Получаем значение суммы из поля ввода
   const sumInput = document.getElementById('sum-input') as HTMLInputElement;
   let sumValue = 0;
@@ -167,8 +194,8 @@ function makeText() {
       sumValue = rawValueNum;
     }
   }
-  const purp = (document.getElementById('purp-input') as HTMLInputElement)?.value ?? '';
-  const org = (document.querySelector('input[name="org"]:checked') as HTMLInputElement)?.value ?? '';
+  const purp = (document.getElementById('purp-input') as HTMLInputElement).value;
+  const org = (document.querySelector('input[name="org"]:checked') as HTMLInputElement).value;
   let text = '';
   switch (org) {
     case 'org-td':
@@ -180,71 +207,140 @@ function makeText() {
     default:
       text = '';
   }
-  (document.getElementById('text-input') as HTMLTextAreaElement).value = text;
-  redrawQrCode(text, org);
+  redrawQrCode(text, org, fio, purp, sumInput.value);
 }
 
-function redrawQrCode(text: string, org: string) {
-  // Используем namespace qrcodegen
-  try {
-    const qr = qrcodegen.QrCode.encodeText(text, qrcodegen.QrCode.Ecc.MEDIUM);
-    const canvas = document.getElementById('qrcode-canvas') as HTMLCanvasElement;
-    const scale = 6;
-    const border = 2;
-    const width = (qr.size + border * 2) * scale;
-    const extraHeight = 100;
-    canvas.width = width;
-    canvas.height = width + extraHeight + width / 9;
-    const ctx = canvas.getContext('2d')!;
-    // белый фон
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // рисуем QR
-    ctx.fillStyle = '#000000';
-    for (let y = -border; y < qr.size + border; y++) {
-      for (let x = -border; x < qr.size + border; x++) {
-        if (qr.getModule(x, y)) {
-          ctx.fillRect((x + border) * scale, width / 9 + 10 + (y + border) * scale, scale, scale);
+export function redrawQrCode(text: string, org: string, fio:string, purp: string, sum: string) {
+    if (!canvas) return;
+    
+    try {
+        canvas.clear();
+        const scale = 6;
+        const border = 2;
+        const qr = qrcodegen.QrCode.encodeText(text, qrcodegen.QrCode.Ecc.MEDIUM);
+        const qrSize = qr.size;
+        const width = (qrSize + border * 2) * scale;
+        const logoW = 130;
+        const logoH = 45;
+        const spacing = 15;
+
+        canvas.backgroundColor = '#FFFFFF';
+        const defaultStyle = {
+            fontSize: 14,
+            fontFamily: 'Arial',
+            fill: '#000000',
+            selectable: false,
+            editable: false
+        };
+
+        logoImage!.scaleToWidth(logoW);
+        logoImage!.scaleToHeight(logoH);
+        canvas.add(logoImage!);
+
+        canvas.add(new fabric.Textbox('QR-код для оплаты', {
+            left: logoW + 50,
+            top: logoH / 2,
+            width: 200,
+            ...defaultStyle,
+            fontSize: 16,
+            fontWeight: 'bold',
+        }));
+
+        // === Данные для строк ===
+        const fields = [
+          { label: 'Ученик:', value: fio },
+          { label: 'Назначение платежа:', value: purp },
+          { label: 'Сумма:', value: sum }
+        ];
+
+        let currentTop = logoH + spacing * 2;
+
+        fields.forEach(field => {
+          const label = new fabric.Textbox(field.label, {
+            left: 10,
+            top: currentTop,
+            width: 150,
+            ...defaultStyle
+          });
+          canvas!.add(label);
+
+          const valueText = new fabric.Textbox(field.value, {
+            left: 160,
+            top: currentTop,
+            width: 230,
+            ...defaultStyle
+          });
+          canvas!.add(valueText);
+
+          currentTop += valueText.height + spacing;
+        });
+
+        // Отрисовка QR-кода как изображения
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = width;
+        tempCanvas.height = width;
+        const ctx = tempCanvas.getContext('2d')!;
+        for (let y = -border; y < qrSize + border; y++) {
+            for (let x = -border; x < qrSize + border; x++) {
+                if (qr.getModule(x, y)) {
+                    ctx.fillStyle = '#000000';
+                    ctx.fillRect((x + border) * scale, (y + border) * scale, scale, scale);
+                }
+            }
         }
-      }
+        const qrImage = new fabric.FabricImage(tempCanvas, {
+            left: 0,
+            top: currentTop,
+            selectable: false
+        });
+        qrImage.scaleToWidth(400);
+        canvas.add(qrImage); 
+
+        // Текст
+        const lines = org === 'org-td' ? [
+            'Реквизиты оплаты:',
+            'Наименование организации: ООО «ТЕРРИТОРИЯ ДЕТСТВА»',
+            'ОГРН 1087746828180, ИНН 7725641886, КПП 772901001',
+            'Расчетный счет № 40702810538000453171',
+            'Наименование банка: ПАО Сбербанк, БИК: 044525225',
+            'Корреспондентский счет: 30101810400000000225'
+        ] : [
+            'Реквизиты оплаты:',
+            'Наименование организации: АНО «СЧАСТЛИВОЕ ДЕТСТВО»',
+            'ИНН: 9729300383, КПП: 772901001',
+            'Номер расчетного счета: 40703810738000017277',
+            'Наименование банка: ПАО Сбербанк, БИК: 044525225',
+            'Корреспондентский счет: 30101810400000000225'
+        ];
+
+        currentTop += 400;
+        lines.forEach((line, index) => {
+            canvas!.add(new fabric.Textbox(line, {
+                left: 10,
+                top: currentTop + index * 15,
+                width: width,
+                fontSize: 12,
+                fontFamily: 'sans-serif',
+                fill: '#000000',
+                selectable: false,
+                editable: false
+            }));
+        });
+
+        canvas.setDimensions({ height: currentTop + 100});
+        canvas.renderAll();
+
+        const download = document.getElementById('download') as HTMLAnchorElement;
+        download.href = canvas.toDataURL({
+          format: 'png',
+          multiplier: 1
+        });
+        var now = new Date();
+        var datetime = now.toLocaleString('sv-SE', { hour12: false }); //.replace(/:/g, '-').replace(' ', '_'); 
+        var filename = `${fio.replace(/\s/g, '_')}_${datetime}.png`;
+        download.download = filename;
+
+    } catch (e) {
+        console.error('Ошибка рендеринга:', e);
     }
-
-    const img = document.getElementById("logo") as CanvasImageSource;
-    ctx.drawImage(img, 10, 10, width / 3, width / 9);
-
-    // текст под QR
-    const lines = org === 'org-td'
-      ? [
-        'Реквизиты оплаты:',
-        'Наименование организации: ООО «ТЕРРИТОРИЯ ДЕТСТВА»',
-        'ОГРН 1087746828180, ИНН 7725641886, КПП 772901001',
-        'Расчетный счет № 40702810538000453171',
-        'Наименование банка: ПАО Сбербанк, БИК: 044525225',
-        'Корреспондентский счет: 30101810400000000225'
-      ]
-      : [
-        'Реквизиты оплаты:',
-        'Наименование организации: АНО «СЧАСТЛИВОЕ ДЕТСТВО»',
-        'ИНН: 9729300383, КПП: 772901001',
-        'Номер расчетного счета: 40703810738000017277',
-        'Наименование банка: ПАО Сбербанк, БИК: 044525225',
-        'Корреспондентский счет: 30101810400000000225'
-      ];
-    ctx.font = '12px sans-serif';
-    ctx.fillStyle = '#000000';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    let yPos = width + 10 + width / 9;
-    lines.forEach(line => {
-      ctx.fillText(line, 10, yPos);
-      yPos += 14.4;
-    });
-    // ссылка «Скачать»
-    const download = document.getElementById('download') as HTMLAnchorElement;
-    download.download = 'qr-code.png';
-    download.href = canvas.toDataURL('image/png');
-  } catch (err) {
-    console.error("QR Code generation error:", err);
-    alert("Ошибка генерации QR-кода. Проверьте введенные данные.");
-  }
 }

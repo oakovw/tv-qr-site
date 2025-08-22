@@ -19,6 +19,7 @@
     "vite": "^7.0.4"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.858.0"
+    "@aws-sdk/client-s3": "^3.858.0",
+    "fabric": "^6.7.1"
   }
 }
