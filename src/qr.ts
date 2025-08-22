@@ -250,7 +250,7 @@ export function redrawQrCode(text: string, org: string, fio:string, purp: string
         const fields = [
           { label: 'Ученик:', value: fio },
           { label: 'Назначение платежа:', value: purp },
-          { label: 'Сумма:', value: sum }
+          { label: 'Сумма:', value: `${sum} руб.` }
         ];
 
         let currentTop = logoH + spacing * 2;
