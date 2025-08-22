@@ -2,7 +2,8 @@ const { S3 } = require('@aws-sdk/client-s3');
 
 const ALLOWED_USERS = [
   'laramartish@yandex.ru',
-  'oa.kovylin@yandex.ru'
+  'oa.kovylin@yandex.ru',
+  'gendirector@talantville.ru'
 ];
 
 const s3 = new S3({
