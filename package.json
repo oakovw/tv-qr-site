@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:prod": "tsc && vite build --base=https://d5dq7p5jrctvflqub0dj.fary004x.apigw.yandexcloud.net/",
+    "build:prod": "tsc && vite build --base=https://qr.oakov.ru",
     "preview": "vite preview",
     "build:cf": "esbuild src/cf.ts --bundle --platform=node --target=node18 --outfile=dist/cf/index.js"
   },
